@@ -50,7 +50,7 @@
   </section>
 </section></main>
 <script>
-const OWNER='innoshimaseika1950',REPO='cricla-seto-order',PATH='products.json',ASSET='assets/products/';
+const OWNER='innoshimaseika',REPO='crecla-seto-order',PATH='products.json',ASSET='assets/products/';
 let token=sessionStorage.getItem('creclaAdminToken')||'',sha='',products=[],pendingFile=null,photoRemoved=false;
 const $=id=>document.getElementById(id);
 function api(path,options={}){return fetch('https://api.github.com'+path,{...options,headers:{Accept:'application/vnd.github+json',Authorization:'Bearer '+token,'X-GitHub-Api-Version':'2022-11-28',...(options.headers||{})}})}
