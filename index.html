@@ -62,8 +62,8 @@ async function loadProducts(){
    document.querySelector('#error').style.display='block';
  }
 }
-async function sendToLine(text){
- if(window.liff&&LIFF_ID){try{await liff.init({liffId:LIFF_ID});if(!liff.isInClient()){await navigator.clipboard.writeText(text);alert('注文内容をコピーしました。LINEのトークに貼り付けて送信してください。');return false}await liff.sendMessages([{type:'text',text}]);liff.closeWindow();return true}catch(e){alert('送信準備中にエラーがありました。');return false}}
+async function sendToLine(text,triggerText=''){
+ if(window.liff&&LIFF_ID){try{await liff.init({liffId:LIFF_ID});if(!liff.isInClient()){await navigator.clipboard.writeText(text);alert('注文内容をコピーしました。LINEのトークに貼り付けて送信してください。');return false}const messages=[{type:'text',text}];if(triggerText)messages.push({type:'text',text:triggerText});await liff.sendMessages(messages);liff.closeWindow();return true}catch(e){alert('送信準備中にエラーがありました。');return false}}
  try{await navigator.clipboard.writeText(text);alert('LINE連携の設定前のため、注文内容をコピーしました。LINEトークに貼り付けて送信してください。')}catch(e){alert(text)}return false
 }
 async function sendOrder(){
@@ -72,7 +72,7 @@ async function sendOrder(){
  const text=isBottleOrder
   ?'【クリクラ瀬戸 ご注文】\\n\\n'+rows.map(x=>`・${x.p.name}：${x.q}${x.p.unit}`).join('\\n')+'\\n\\n注文日時：'+new Date().toLocaleString('ja-JP')
   :'【おすすめ商品 ご注文】\\n'+rows.map(x=>`・${x.p.name} × ${x.q}個`).join('\\n')+'\\n\\n合計：'+yen(rows.reduce((sum,x)=>sum+x.p.price*x.q,0))+' (税込み)\\n※次回配達日にお届けいたします。';
- await sendToLine(text)
+ await sendToLine(text,isBottleOrder?'注文確定':'')
 }
 async function sendNoDelivery(){await sendToLine('今回は配達不要')}
 if(isBottleOrder){document.title='クリクラ瀬戸 ご注文';document.querySelector('header h1').textContent='クリクラ瀬戸 ご注文';document.querySelector('header p').textContent='商品を選択して「注文確定」を押してください';document.querySelector('.note').textContent='選択した内容は、テスト用公式LINEのトークへ自動送信されます。';document.querySelector('#orderButton').textContent='注文確定';document.querySelector('#noDeliveryButton').classList.remove('hidden');document.querySelector('#noDeliveryButton').addEventListener('click',sendNoDelivery)}document.querySelector('#orderButton').addEventListener('click',sendOrder);loadProducts();
