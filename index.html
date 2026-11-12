@@ -62,7 +62,7 @@ async function sendOrder(){
  if(!rows.length){alert(isBottleOrder?'ご注文する商品を1つ以上選択してください。':'ご注文する商品の数量を1個以上入力してください。');return}
  const text=isBottleOrder
   ?'【クリクラ瀬戸 ご注文】\\n\\n'+rows.map(x=>`・${x.p.name}：${x.q}${x.p.unit}`).join('\\n')+'\\n\\n注文日時：'+new Date().toLocaleString('ja-JP')
-  :'【おすすめ商品 ご注文】\\n'+rows.map(x=>`・${x.p.name} × ${x.q}個　${yen(x.p.price*x.q)}`).join('\\n')+'\\n\\n合計：'+yen(rows.reduce((sum,x)=>sum+x.p.price*x.q,0))+'\\n\\n※次回、ボトルご注文時にお届けいたします。';
+  :'【おすすめ商品 ご注文】\\n'+rows.map(x=>`・${x.p.name} × ${x.q}個`).join('\\n')+'\\n\\n合計：'+yen(rows.reduce((sum,x)=>sum+x.p.price*x.q,0))+' (税込み)\\n※次回配達日にお届けいたします。';
  if(window.liff&&LIFF_ID){try{await liff.init({liffId:LIFF_ID});if(!liff.isInClient()){await navigator.clipboard.writeText(text);alert('注文内容をコピーしました。LINEのトークに貼り付けて送信してください。');return}await liff.sendMessages([{type:'text',text}]);if(isBottleOrder){alert('ご注文内容をLINEのトークへ送信しました。');}liff.closeWindow()}catch(e){alert('送信準備中にエラーがありました。')};return}
  try{await navigator.clipboard.writeText(text);alert('LINE連携の設定前のため、注文内容をコピーしました。LINEトークに貼り付けて送信してください。')}catch(e){alert(text)}
 }
