@@ -46,7 +46,7 @@ async function sendOrder(){
  const rows=[...document.querySelectorAll('input[data-index]')].map(el=>({p:products[el.dataset.index],q:Number(el.value||0)})).filter(x=>x.q>0);
  if(!rows.length){alert('ご注文する商品の数量を1個以上入力してください。');return}
  const total=rows.reduce((sum,x)=>sum+x.p.price*x.q,0);
- const text='【おすすめ商品 ご注文】\n'+rows.map(x=>`・${x.p.name} × ${x.q}個　${yen(x.p.price*x.q)}`).join('\n')+'\n\n合計：'+yen(total)+'\n\nお名前：\nお届け希望：\n備考：';
+ const text='【おすすめ商品 注文】\\n'+rows.map(x=>`・${x.p.name} × ${x.q}個　${yen(x.p.price*x.q)}`).join('\\n')+'\\n\\n合計：'+yen(total)+'\\n\\n※次回、ボトルご注文時にお届けいたします。';
  if(window.liff&&LIFF_ID){try{await liff.init({liffId:LIFF_ID});if(!liff.isInClient()){await navigator.clipboard.writeText(text);alert('注文内容をコピーしました。LINEのトークに貼り付けて送信してください。');return}await liff.sendMessages([{type:'text',text}]);liff.closeWindow()}catch(e){alert('送信準備中にエラーがありました。')};return}
  try{await navigator.clipboard.writeText(text);alert('LINE連携の設定前のため、注文内容をコピーしました。LINEトークに貼り付けて送信してください。')}catch(e){alert(text)}
 }
