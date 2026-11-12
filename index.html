@@ -43,7 +43,7 @@ async function loadProducts(){
  }
 }
 async function sendOrder(){
- const rows=[...document.querySelectorAll('input[data-index]')].map(el=>({p:products[el.dataset.index],q:Number(el.value||0)})).filter(x=>x.q>0);
+ const rows=[...document.querySelectorAll('input[data-index],select[data-index]')].map(el=>({p:products[el.dataset.index],q:Number(el.value||0)})).filter(x=>x.q>0);
  if(!rows.length){alert('ご注文する商品の数量を1個以上入力してください。');return}
  const total=rows.reduce((sum,x)=>sum+x.p.price*x.q,0);
  const text='【おすすめ商品 ご注文】\\n'+rows.map(x=>`・${x.p.name} × ${x.q}個　${yen(x.p.price*x.q)}`).join('\\n')+'\\n\\n合計：'+yen(total)+'\\n\\n※次回、ボトルご注文時にお届けいたします。';
