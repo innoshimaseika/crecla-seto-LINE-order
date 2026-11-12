@@ -19,7 +19,7 @@
 <div class="bottom"><button id="orderButton" type="button">注文内容を送る</button></div>
 <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 <script>
-const CATALOG_API='https://script.google.com/macros/s/AKfycbzK0QXm_6vrxkIEQMtHF6YosV4dAtQZ0omGlQVnkKp7Mbk6RnmrRRvzXon6mqvkk-_IcQ/exec';
+const CATALOG_GVIZ='https://docs.google.com/spreadsheets/d/1-wksk7VRnkPLKu0-KN0jmL7qP5VmgyHQpBuvtYdAIRk/gviz/tq?sheet=Sheet1&tqx=out:json';
 const LIFF_ID='2011951125-2wVukDBj';
 let products=[];
 function yen(n){return '¥'+Number(n||0).toLocaleString('ja-JP')}
@@ -30,16 +30,28 @@ function render(){
  box.innerHTML=products.map((p,i)=>`<article class="product"><div>${p.imageUrl?'<img class="photo" src="'+escapeHtml(p.imageUrl)+'" alt="">':'<div class="photo empty">商品画像</div>'}</div><div><div class="name">${escapeHtml(p.name)}</div><div class="price">${yen(p.price)}（税込）</div><p class="description">${escapeHtml(p.description||'').replace(/\n/g,'<br>')}</p><label class="qty">数量 <input type="number" min="0" step="1" value="0" inputmode="numeric" data-index="${i}"> 個</label>${p.stockLabel?'<div class="description" style="margin-top:7px">'+escapeHtml(p.stockLabel)+'</div>':''}</div></article>`).join('');
 }
 function escapeHtml(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-async function loadProducts(){
- try{
-   const response=await fetch(CATALOG_API);
-   if(!response.ok)throw new Error('API error');
-   products=await response.json();
-   render();
- }catch(error){
+function loadProducts(){
+ const fail=()=>{
    document.querySelector('#products').style.display='none';
    document.querySelector('#error').style.display='block';
- }
+ };
+ const timer=setTimeout(fail,12000);
+ window.google=window.google||{};
+ window.google.visualization=window.google.visualization||{};
+ window.google.visualization.Query=window.google.visualization.Query||{};
+ window.google.visualization.Query.setResponse=(response)=>{
+   clearTimeout(timer);
+   try{
+     products=(response.table.rows||[]).map(row=>row.c||[])
+       .filter(c=>c[0]?.v&&c[5]?.v==='公開')
+       .map(c=>({id:String(c[0].v),name:String(c[1]?.v||''),price:Number(c[2]?.v||0),description:String(c[3]?.v||''),imageUrl:String(c[4]?.v||''),stockLabel:String(c[7]?.v||'')}));
+     render();
+   }catch(error){fail()}
+ };
+ const script=document.createElement('script');
+ script.src=CATALOG_GVIZ;
+ script.onerror=()=>{clearTimeout(timer);fail()};
+ document.head.appendChild(script);
 }
 async function sendOrder(){
  const rows=[...document.querySelectorAll('input[data-index]')].map(el=>({p:products[el.dataset.index],q:Number(el.value||0)})).filter(x=>x.q>0);
