@@ -27,7 +27,7 @@ function render(){
  const box=document.querySelector('#products');
  if(!products.length){box.className='empty-state';box.textContent='現在ご注文いただける商品はありません。';return}
  box.className='';
- box.innerHTML=products.map((p,i)=>`<article class="product"><div>${p.imageUrl?'<img class="photo" src="'+escapeHtml(p.imageUrl)+'" alt="">':'<div class="photo empty">商品画像</div>'}</div><div><div class="name">${escapeHtml(p.name)}</div><div class="price">${yen(p.price)}（税込）</div><p class="description">${escapeHtml(p.description||'').replace(/\\n/g,'<br>')}</p><label class="qty">数量 <input type="number" min="0" step="1" value="0" inputmode="numeric" data-index="${i}"> 個</label>${p.stockLabel?'<div class="description" style="margin-top:7px">'+escapeHtml(p.stockLabel)+'</div>':''}</div></article>`).join('');
+ box.innerHTML=products.map((p,i)=>`<article class="product"><div>${p.imageUrl?'<img class="photo" src="'+escapeHtml(p.imageUrl)+'" alt="">':'<div class="photo empty">商品画像</div>'}</div><div><div class="name">${escapeHtml(p.name)}</div><div class="price">${yen(p.price)}（税込）</div><p class="description">${escapeHtml(p.description||'').replace(/\n/g,'<br>')}</p><label class="qty">数量 <input type="number" min="0" step="1" value="0" inputmode="numeric" data-index="${i}"> 個</label>${p.stockLabel?'<div class="description" style="margin-top:7px">'+escapeHtml(p.stockLabel)+'</div>':''}</div></article>`).join('');
 }
 function escapeHtml(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 async function loadProducts(){
