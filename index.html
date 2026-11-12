@@ -21,10 +21,23 @@
 const CATALOG_API='https://raw.githubusercontent.com/innoshimaseika1950/cricla-seto-order/main/products.json';
 const LIFF_ID='2011951125-2wVukDBj';
 let products=[];
+const isBottleOrder=new URLSearchParams(location.search).get('mode')==='bottle';
+const bottleProducts=[
+ {id:'bottle12l',name:'クリクラボトル12L',unit:'本',values:Array.from({length:31},(_,i)=>i)},
+ {id:'bottle58l',name:'クリクラボトル5.8L',unit:'本',values:[0,2,4,6,8,10,12,14,16,18,20],labels:['注文しない','2本（1箱）','4本（2箱）','6本（3箱）','8本（4箱）','10本（5箱）','12本（6箱）','14本（7箱）','16本（8箱）','18本（9箱）','20本（10箱）']},
+ {id:'paperCups',name:'紙コップ（50個入）',unit:'袋',values:Array.from({length:21},(_,i)=>i)},
+ {id:'ziacoPouch',name:'ZiACOパウチ',unit:'袋',values:[0,1,3,6,9],labels:['注文しない','1袋','3袋（1箱）','6袋（2箱）','9袋（3箱）']},
+ {id:'drinkMateGas',name:'ドリンクメイト ガスシリンダー（142L）',unit:'本',values:Array.from({length:6},(_,i)=>i)}
+];
 function yen(n){return '¥'+Number(n||0).toLocaleString('ja-JP')}
+function renderBottleProducts(){
+ const box=document.querySelector('#products');box.className='';
+ box.innerHTML=products.map((p,i)=>`<article class="product"><div class="photo empty">ご注文</div><div><div class="name">${escapeHtml(p.name)}</div><label class="qty">数量 <select data-index="${i}">${p.values.map((value,n)=>`<option value="${value}">${p.labels?.[n]||(!value?'注文しない':value+p.unit)}</option>`).join('')}</select></label></div></article>`).join('');
+}
 function productParts(p){const text=p.description||'',marker='【商品情報】',at=text.indexOf(marker);if(p.productInfo)return{description:text,info:p.productInfo};return at<0?{description:text,info:''}:{description:text.slice(0,at).trim(),info:text.slice(at).trim()}}
 function viewText(s){return escapeHtml(s||'').replace(/\n/g,'<br>')}
 function render(){
+ if(isBottleOrder){renderBottleProducts();return}
  const box=document.querySelector('#products');
  if(!products.length){box.className='empty-state';box.textContent='現在ご注文いただける商品はありません。';return}
  box.className='';
@@ -32,6 +45,7 @@ function render(){
 }
 function escapeHtml(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 async function loadProducts(){
+ if(isBottleOrder){products=bottleProducts;render();return}
  try{
    const response=await fetch(CATALOG_API,{cache:'no-store'});
    if(!response.ok)throw new Error('catalog error');
@@ -45,13 +59,14 @@ async function loadProducts(){
 }
 async function sendOrder(){
  const rows=[...document.querySelectorAll('input[data-index],select[data-index]')].map(el=>({p:products[el.dataset.index],q:Number(el.value||0)})).filter(x=>x.q>0);
- if(!rows.length){alert('ご注文する商品の数量を1個以上入力してください。');return}
- const total=rows.reduce((sum,x)=>sum+x.p.price*x.q,0);
- const text='【おすすめ商品 ご注文】\\n'+rows.map(x=>`・${x.p.name} × ${x.q}個　${yen(x.p.price*x.q)}`).join('\\n')+'\\n\\n合計：'+yen(total)+'\\n\\n※次回、ボトルご注文時にお届けいたします。';
- if(window.liff&&LIFF_ID){try{await liff.init({liffId:LIFF_ID});if(!liff.isInClient()){await navigator.clipboard.writeText(text);alert('注文内容をコピーしました。LINEのトークに貼り付けて送信してください。');return}await liff.sendMessages([{type:'text',text}]);liff.closeWindow()}catch(e){alert('送信準備中にエラーがありました。')};return}
+ if(!rows.length){alert(isBottleOrder?'ご注文する商品を1つ以上選択してください。':'ご注文する商品の数量を1個以上入力してください。');return}
+ const text=isBottleOrder
+  ?'【クリクラ瀬戸 ご注文】\\n\\n'+rows.map(x=>`・${x.p.name}：${x.q}${x.p.unit}`).join('\\n')+'\\n\\n注文日時：'+new Date().toLocaleString('ja-JP')
+  :'【おすすめ商品 ご注文】\\n'+rows.map(x=>`・${x.p.name} × ${x.q}個　${yen(x.p.price*x.q)}`).join('\\n')+'\\n\\n合計：'+yen(rows.reduce((sum,x)=>sum+x.p.price*x.q,0))+'\\n\\n※次回、ボトルご注文時にお届けいたします。';
+ if(window.liff&&LIFF_ID){try{await liff.init({liffId:LIFF_ID});if(!liff.isInClient()){await navigator.clipboard.writeText(text);alert('注文内容をコピーしました。LINEのトークに貼り付けて送信してください。');return}await liff.sendMessages([{type:'text',text}]);if(isBottleOrder){alert('ご注文内容をLINEのトークへ送信しました。');}liff.closeWindow()}catch(e){alert('送信準備中にエラーがありました。')};return}
  try{await navigator.clipboard.writeText(text);alert('LINE連携の設定前のため、注文内容をコピーしました。LINEトークに貼り付けて送信してください。')}catch(e){alert(text)}
 }
-document.querySelector('#orderButton').addEventListener('click',sendOrder);loadProducts();
+if(isBottleOrder){document.title='クリクラ瀬戸 ご注文';document.querySelector('header h1').textContent='クリクラ瀬戸 ご注文';document.querySelector('header p').textContent='商品を選択して「注文内容を送る」を押してください';document.querySelector('.note').textContent='選択した内容は、テスト用公式LINEのトークへ自動送信されます。'}document.querySelector('#orderButton').addEventListener('click',sendOrder);loadProducts();
 </script>
 </body>
 </html>
