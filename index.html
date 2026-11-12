@@ -19,7 +19,7 @@
 <div class="bottom"><button id="orderButton" type="button">注文内容を送る</button></div>
 <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 <script>
-const CATALOG_API='products.json';
+const CATALOG_API='https://raw.githubusercontent.com/innoshimaseika1950/cricla-seto-order/main/products.json';
 const LIFF_ID='2011951125-2wVukDBj';
 let products=[];
 function yen(n){return '¥'+Number(n||0).toLocaleString('ja-JP')}
