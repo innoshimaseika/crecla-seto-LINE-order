@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>クリクラ瀬戸 おすすめ商品</title>
   <style>
-    :root{--blue:#0786d7;--ink:#14212b;--line:#dfe7ed;--bg:#f4f8fa}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif}header{background:linear-gradient(135deg,#0b9be7,#0568bd);color:#fff;padding:26px 20px 24px}header h1{font-size:21px;margin:0 0 7px}header p{margin:0;font-size:14px;opacity:.9}.wrap{max-width:640px;margin:auto;padding:16px 14px 120px}.note{font-size:13px;color:#60717c;margin:0 2px 14px}.product{background:#fff;border:1px solid var(--line);border-radius:14px;display:grid;grid-template-columns:104px 1fr;gap:13px;padding:12px;margin:10px 0;box-shadow:0 2px 8px #18344a0a}.photo{width:104px;height:104px;background:#e9f1f5;border-radius:10px;object-fit:cover}.photo.empty{display:grid;place-items:center;color:#7c8b94;font-size:12px}.name{font-size:16px;font-weight:700;margin:2px 0 4px}.price{color:#0675bf;font-weight:700;margin-bottom:7px}.description{font-size:13px;line-height:1.55;color:#53636d;margin:0 0 10px}.product-info{border-top:1px solid var(--line);margin:9px 0;padding-top:8px}.product-info summary{font-size:13px;color:#0872bb;font-weight:700;cursor:pointer;list-style:none}.product-info summary::-webkit-details-marker{display:none}.product-info summary:after{content:'＋';float:right}.product-info[open] summary:after{content:'−'}.info-body{font-size:12px;line-height:1.6;color:#53636d;padding:9px 2px 2px}.qty{display:flex;align-items:center;gap:8px;font-size:13px}.qty input,.qty select{width:110px;padding:7px;border:1px solid #c6d4dc;border-radius:7px;font-size:16px;background:#fff}.bottom{position:fixed;left:0;right:0;bottom:0;padding:12px 14px;background:#fffffff0;backdrop-filter:blur(8px);border-top:1px solid var(--line)}button{width:min(640px,100%);display:block;margin:auto;background:var(--blue);border:0;border-radius:12px;padding:15px;color:#fff;font-size:16px;font-weight:700}.empty-state,.loading{background:#fff;border-radius:12px;padding:25px;text-align:center;color:#697a85}.help{font-size:12px;line-height:1.5;color:#71808a;text-align:center;margin:14px 8px}#error{display:none;color:#c14343}
+    :root{--blue:#0786d7;--ink:#14212b;--line:#dfe7ed;--bg:#f4f8fa}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif}header{background:linear-gradient(135deg,#0b9be7,#0568bd);color:#fff;padding:26px 20px 24px}header h1{font-size:21px;margin:0 0 7px}header p{margin:0;font-size:14px;opacity:.9}.wrap{max-width:640px;margin:auto;padding:16px 14px 120px}.note{font-size:13px;color:#60717c;margin:0 2px 14px}.product{background:#fff;border:1px solid var(--line);border-radius:14px;display:grid;grid-template-columns:104px 1fr;gap:13px;padding:12px;margin:10px 0;box-shadow:0 2px 8px #18344a0a}.photo{width:104px;height:104px;background:#e9f1f5;border-radius:10px;object-fit:cover}.photo.empty{display:grid;place-items:center;color:#7c8b94;font-size:12px}.name{font-size:16px;font-weight:700;margin:2px 0 4px}.price{color:#0675bf;font-weight:700;margin-bottom:7px}.description{font-size:13px;line-height:1.55;color:#53636d;margin:0 0 10px}.product-info{border-top:1px solid var(--line);margin:9px 0;padding-top:8px}.product-info summary{font-size:13px;color:#0872bb;font-weight:700;cursor:pointer;list-style:none}.product-info summary::-webkit-details-marker{display:none}.product-info summary:after{content:'＋';float:right}.product-info[open] summary:after{content:'−'}.info-body{font-size:12px;line-height:1.6;color:#53636d;padding:9px 2px 2px}.qty{display:flex;align-items:center;gap:8px;font-size:13px}.qty input,.qty select{width:110px;padding:7px;border:1px solid #c6d4dc;border-radius:7px;font-size:16px;background:#fff}.bottom{position:fixed;left:0;right:0;bottom:0;padding:12px 14px;background:#fffffff0;backdrop-filter:blur(8px);border-top:1px solid var(--line)}button{width:min(640px,100%);display:block;margin:auto;background:var(--blue);border:0;border-radius:12px;padding:15px;color:#fff;font-size:16px;font-weight:700}.bottom{display:grid;gap:8px}.danger-button{background:#b94d55}.hidden{display:none!important}.empty-state,.loading{background:#fff;border-radius:12px;padding:25px;text-align:center;color:#697a85}.help{font-size:12px;line-height:1.5;color:#71808a;text-align:center;margin:14px 8px}#error{display:none;color:#c14343}
   </style>
 </head>
 <body>
@@ -15,7 +15,7 @@
   <div id="products" class="loading">商品を読み込んでいます…</div>
   <p id="error" class="help">商品を読み込めませんでした。時間をおいて再度お試しください。</p>
 </main>
-<div class="bottom"><button id="orderButton" type="button">注文内容を送る</button></div>
+<div class="bottom"><button id="orderButton" type="button">注文内容を送る</button><button id="noDeliveryButton" class="danger-button hidden" type="button">今回は配達不要</button></div>
 <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 <script>
 const CATALOG_API='https://raw.githubusercontent.com/innoshimaseika/crecla-seto-order/main/products.json';
@@ -62,16 +62,20 @@ async function loadProducts(){
    document.querySelector('#error').style.display='block';
  }
 }
+async function sendToLine(text){
+ if(window.liff&&LIFF_ID){try{await liff.init({liffId:LIFF_ID});if(!liff.isInClient()){await navigator.clipboard.writeText(text);alert('注文内容をコピーしました。LINEのトークに貼り付けて送信してください。');return false}await liff.sendMessages([{type:'text',text}]);liff.closeWindow();return true}catch(e){alert('送信準備中にエラーがありました。');return false}}
+ try{await navigator.clipboard.writeText(text);alert('LINE連携の設定前のため、注文内容をコピーしました。LINEトークに貼り付けて送信してください。')}catch(e){alert(text)}return false
+}
 async function sendOrder(){
  const rows=[...document.querySelectorAll('input[data-index],select[data-index]')].map(el=>({p:products[el.dataset.index],q:Number(el.value||0)})).filter(x=>x.q>0);
  if(!rows.length){alert(isBottleOrder?'ご注文する商品を1つ以上選択してください。':'ご注文する商品の数量を1個以上入力してください。');return}
  const text=isBottleOrder
   ?'【クリクラ瀬戸 ご注文】\\n\\n'+rows.map(x=>`・${x.p.name}：${x.q}${x.p.unit}`).join('\\n')+'\\n\\n注文日時：'+new Date().toLocaleString('ja-JP')
   :'【おすすめ商品 ご注文】\\n'+rows.map(x=>`・${x.p.name} × ${x.q}個`).join('\\n')+'\\n\\n合計：'+yen(rows.reduce((sum,x)=>sum+x.p.price*x.q,0))+' (税込み)\\n※次回配達日にお届けいたします。';
- if(window.liff&&LIFF_ID){try{await liff.init({liffId:LIFF_ID});if(!liff.isInClient()){await navigator.clipboard.writeText(text);alert('注文内容をコピーしました。LINEのトークに貼り付けて送信してください。');return}await liff.sendMessages([{type:'text',text}]);if(isBottleOrder){alert('ご注文内容をLINEのトークへ送信しました。');}liff.closeWindow()}catch(e){alert('送信準備中にエラーがありました。')};return}
- try{await navigator.clipboard.writeText(text);alert('LINE連携の設定前のため、注文内容をコピーしました。LINEトークに貼り付けて送信してください。')}catch(e){alert(text)}
+ await sendToLine(text)
 }
-if(isBottleOrder){document.title='クリクラ瀬戸 ご注文';document.querySelector('header h1').textContent='クリクラ瀬戸 ご注文';document.querySelector('header p').textContent='商品を選択して「注文内容を送る」を押してください';document.querySelector('.note').textContent='選択した内容は、テスト用公式LINEのトークへ自動送信されます。'}document.querySelector('#orderButton').addEventListener('click',sendOrder);loadProducts();
+async function sendNoDelivery(){await sendToLine('今回は配達不要')}
+if(isBottleOrder){document.title='クリクラ瀬戸 ご注文';document.querySelector('header h1').textContent='クリクラ瀬戸 ご注文';document.querySelector('header p').textContent='商品を選択して「注文確定」を押してください';document.querySelector('.note').textContent='選択した内容は、テスト用公式LINEのトークへ自動送信されます。';document.querySelector('#orderButton').textContent='注文確定';document.querySelector('#noDeliveryButton').classList.remove('hidden');document.querySelector('#noDeliveryButton').addEventListener('click',sendNoDelivery)}document.querySelector('#orderButton').addEventListener('click',sendOrder);loadProducts();
 </script>
 </body>
 </html>
