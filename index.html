@@ -35,6 +35,7 @@ const bottleProducts=[
  {id:'drinkMateGas',name:'ドリンクメイト ガスシリンダー（142L）',unit:'本',values:Array.from({length:6},(_,i)=>i)}
 ];
 function yen(n){return '¥'+Number(n||0).toLocaleString('ja-JP')}
+function orderQuantityLabel(product,quantity){const index=(product.values||[]).indexOf(quantity);return product.labels?.[index]||quantity+product.unit}
 function renderBottleProducts(){
  const box=document.querySelector('#products');box.className='';
  box.innerHTML=products.map((p,i)=>`<article class="product"><div>${p.imageUrl?'<img class="photo" src="'+escapeHtml(p.imageUrl)+'" alt="">':'<div class="photo empty">商品画像</div>'}</div><div><div class="name">${escapeHtml(p.name)}</div><label class="qty">数量 <select data-index="${i}">${p.values.map((value,n)=>`<option value="${value}">${p.labels?.[n]||(!value?'注文しない':value+p.unit)}</option>`).join('')}</select></label></div></article>`).join('');
@@ -70,9 +71,9 @@ async function sendOrder(){
  const rows=[...document.querySelectorAll('input[data-index],select[data-index]')].map(el=>({p:products[el.dataset.index],q:Number(el.value||0)})).filter(x=>x.q>0);
  if(!rows.length){alert(isBottleOrder?'ご注文する商品を1つ以上選択してください。':'ご注文する商品の数量を1個以上入力してください。');return}
  const text=isBottleOrder
-  ?'【クリクラ瀬戸 ご注文】\\n\\n'+rows.map(x=>`・${x.p.name}：${x.q}${x.p.unit}`).join('\\n')+'\\n\\n注文日時：'+new Date().toLocaleString('ja-JP')
+  ?'【クリクラ瀬戸 注文確定】\\n'+rows.map(x=>`${x.p.name}：${orderQuantityLabel(x.p,x.q)}`).join('\\n')+'\\n\\n注文日時：'+new Date().toLocaleString('ja-JP')
   :'【おすすめ商品 ご注文】\\n'+rows.map(x=>`・${x.p.name} × ${x.q}個`).join('\\n')+'\\n\\n合計：'+yen(rows.reduce((sum,x)=>sum+x.p.price*x.q,0))+' (税込み)\\n※次回配達日にお届けいたします。';
- await sendToLine(text,isBottleOrder?'注文確定':'')
+ await sendToLine(text)
 }
 async function sendNoDelivery(){await sendToLine('今回は配達不要')}
 if(isBottleOrder){document.title='クリクラ瀬戸 ご注文';document.querySelector('header h1').textContent='クリクラ瀬戸 ご注文';document.querySelector('header p').textContent='商品を選択して「注文確定」を押してください';document.querySelector('.note').textContent='選択した内容は、テスト用公式LINEのトークへ自動送信されます。';document.querySelector('#orderButton').textContent='注文確定';document.querySelector('#noDeliveryButton').classList.remove('hidden');document.querySelector('#noDeliveryButton').addEventListener('click',sendNoDelivery)}document.querySelector('#orderButton').addEventListener('click',sendOrder);loadProducts();
