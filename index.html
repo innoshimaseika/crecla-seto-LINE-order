@@ -21,7 +21,8 @@
 const CATALOG_API='https://raw.githubusercontent.com/innoshimaseika1950/cricla-seto-order/main/products.json';
 const LIFF_ID='2011951125-2wVukDBj';
 let products=[];
-const orderParams=new URLSearchParams(location.search);\nconst isBottleOrder=orderParams.get('mode')==='bottle'||!orderParams.has('v');
+const orderParams=new URLSearchParams(location.search);
+const isBottleOrder=orderParams.get('mode')==='bottle'||!orderParams.has('v');
 const bottleProducts=[
  {id:'bottle12l',name:'クリクラボトル12L',unit:'本',values:Array.from({length:31},(_,i)=>i)},
  {id:'bottle58l',name:'クリクラボトル5.8L',unit:'本',values:[0,2,4,6,8,10,12,14,16,18,20],labels:['注文しない','2本（1箱）','4本（2箱）','6本（3箱）','8本（4箱）','10本（5箱）','12本（6箱）','14本（7箱）','16本（8箱）','18本（9箱）','20本（10箱）']},
