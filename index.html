@@ -19,6 +19,7 @@
 <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 <script>
 const CATALOG_API='https://raw.githubusercontent.com/innoshimaseika1950/cricla-seto-order/main/products.json';
+const BOTTLE_CATALOG_API='https://raw.githubusercontent.com/innoshimaseika1950/cricla-seto-order/main/bottle-products-test.json';
 const LIFF_ID='2011951125-2wVukDBj';
 let products=[];
 const orderParams=new URLSearchParams(location.search);
@@ -36,7 +37,7 @@ const bottleProducts=[
 function yen(n){return '¥'+Number(n||0).toLocaleString('ja-JP')}
 function renderBottleProducts(){
  const box=document.querySelector('#products');box.className='';
- box.innerHTML=products.map((p,i)=>`<article class="product"><div class="photo empty">ご注文</div><div><div class="name">${escapeHtml(p.name)}</div><label class="qty">数量 <select data-index="${i}">${p.values.map((value,n)=>`<option value="${value}">${p.labels?.[n]||(!value?'注文しない':value+p.unit)}</option>`).join('')}</select></label></div></article>`).join('');
+ box.innerHTML=products.map((p,i)=>`<article class="product"><div>${p.imageUrl?'<img class="photo" src="'+escapeHtml(p.imageUrl)+'" alt="">':'<div class="photo empty">商品画像</div>'}</div><div><div class="name">${escapeHtml(p.name)}</div><label class="qty">数量 <select data-index="${i}">${p.values.map((value,n)=>`<option value="${value}">${p.labels?.[n]||(!value?'注文しない':value+p.unit)}</option>`).join('')}</select></label></div></article>`).join('');
 }
 function productParts(p){const text=p.description||'',marker='【商品情報】',at=text.indexOf(marker);if(p.productInfo)return{description:text,info:p.productInfo};return at<0?{description:text,info:''}:{description:text.slice(0,at).trim(),info:text.slice(at).trim()}}
 function viewText(s){return escapeHtml(s||'').replace(/\n/g,'<br>')}
@@ -49,7 +50,7 @@ function render(){
 }
 function escapeHtml(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 async function loadProducts(){
- if(isBottleOrder){products=bottleProducts;render();return}
+ if(isBottleOrder){try{const response=await fetch(BOTTLE_CATALOG_API,{cache:'no-store'});if(!response.ok)throw new Error('bottle catalog error');const data=await response.json();products=(Array.isArray(data.products)?data.products:[]).filter(p=>p&&p.published);if(!products.length)products=bottleProducts}catch(error){products=bottleProducts}render();return}
  try{
    const response=await fetch(CATALOG_API,{cache:'no-store'});
    if(!response.ok)throw new Error('catalog error');
