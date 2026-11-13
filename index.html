@@ -81,6 +81,7 @@ async function sendOrder(){
  await sendToLine(text)
 }
 async function sendNoDelivery(){await sendToLine('今回は配達不要')}
+if(!isBottleOrder&&window.liff&&LIFF_ID)initializeLiff().catch(error=>console.error(error));
 if(isBottleOrder){document.title='クリクラ瀬戸 ご注文';document.querySelector('header h1').textContent='クリクラ瀬戸 ご注文';document.querySelector('header p').textContent='商品を選択して「注文確定」を押してください';document.querySelector('.note').textContent='選択した内容は、テスト用公式LINEのトークへ自動送信されます。';document.querySelector('#orderButton').textContent='注文確定';document.querySelector('#noDeliveryButton').classList.remove('hidden');document.querySelector('#noDeliveryButton').addEventListener('click',sendNoDelivery)}document.querySelector('#orderButton').addEventListener('click',sendOrder);loadProducts();
 </script>
 </body>
