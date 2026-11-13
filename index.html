@@ -63,8 +63,13 @@ async function loadProducts(){
    document.querySelector('#error').style.display='block';
  }
 }
+let liffInitPromise;
+function initializeLiff(){
+ if(!liffInitPromise&&window.liff&&LIFF_ID)liffInitPromise=liff.init({liffId:LIFF_ID});
+ return liffInitPromise;
+}
 async function sendToLine(text,triggerText=''){
- if(window.liff&&LIFF_ID){try{await liff.init({liffId:LIFF_ID});if(!liff.isInClient()){await navigator.clipboard.writeText(text);alert('注文内容をコピーしました。LINEのトークに貼り付けて送信してください。');return false}const messages=[{type:'text',text}];if(triggerText)messages.push({type:'text',text:triggerText});await liff.sendMessages(messages);liff.closeWindow();return true}catch(e){alert('送信準備中にエラーがありました。');return false}}
+ if(window.liff&&LIFF_ID){try{await initializeLiff();if(!liff.isInClient()){await navigator.clipboard.writeText(text);alert('注文内容をコピーしました。LINEのトークに貼り付けて送信してください。');return false}const messages=[{type:'text',text}];if(triggerText)messages.push({type:'text',text:triggerText});await liff.sendMessages(messages);liff.closeWindow();return true}catch(e){console.error(e);alert('送信できませんでした。LINEアプリから開き直して、もう一度お試しください。');return false}}
  try{await navigator.clipboard.writeText(text);alert('LINE連携の設定前のため、注文内容をコピーしました。LINEトークに貼り付けて送信してください。')}catch(e){alert(text)}return false
 }
 async function sendOrder(){
